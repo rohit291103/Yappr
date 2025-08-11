@@ -12,10 +12,15 @@ import './globals.css'
 import { ThemeProvider } from '../components/providers/theme-provider'
 import { ModeToggle } from '@/components/mode-toggle'
 
+// ⬇️ Import UploadThing SSR plugin
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "@/app/api/uploadthing/core"; // adjust path if needed
+
 const openSans = Open_Sans({
   subsets: ['latin'],
   variable: '--font-open-sans',
-  weight: ['400', '500', '600', '700'], // add weights as needed
+  weight: ['400', '500', '600', '700'],
 })
 
 export const metadata: Metadata = {
@@ -25,9 +30,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
@@ -37,7 +40,7 @@ export default function RootLayout({
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
-            enableSystem = {false}
+            enableSystem={false}
             storageKey='discord-theme'
           >
             <header className="flex justify-end items-center p-4 gap-4 h-16">
@@ -54,6 +57,12 @@ export default function RootLayout({
                 <ModeToggle />
               </SignedIn>
             </header>
+
+            {/* ⬇️ Add SSR hydration before children */}
+            <NextSSRPlugin
+              routerConfig={extractRouterConfig(ourFileRouter)}
+            />
+
             {children}
           </ThemeProvider>
         </body>
