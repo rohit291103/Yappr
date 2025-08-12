@@ -10,6 +10,9 @@ const nextConfig = {
       },
     ],
   },
-}
+  devIndicators: {
+    buildActivityPosition: 'bottom-right', // move from bottom-left to bottom-right
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
