@@ -16,6 +16,7 @@ import { ModeToggle } from '@/components/mode-toggle'
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/app/api/uploadthing/core"; // adjust path if needed
+import { ModalProvider } from '@/components/providers/modal-provider'
 
 const openSans = Open_Sans({
   subsets: ['latin'],
@@ -62,7 +63,7 @@ export default function RootLayout({
             <NextSSRPlugin
               routerConfig={extractRouterConfig(ourFileRouter)}
             />
-
+            <ModalProvider />
             {children}
           </ThemeProvider>
         </body>
