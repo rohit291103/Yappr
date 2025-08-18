@@ -11,6 +11,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/app/api/uploadthing/core";
+import { SocketProvider } from "@/components/providers/socket-provider";
 
 const openSans = Open_Sans({
   subsets: ["latin"],
@@ -40,15 +41,17 @@ export default function RootLayout({
             enableSystem={false}
             storageKey="discord-theme"
           >
-            {/* UploadThing SSR hydration */}
-            <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+            <SocketProvider>
+              {/* UploadThing SSR hydration */}
+              <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
 
-            {/* Global Providers */}
+              {/* Global Providers */}
               <ModalProvider />
-                {children}
+              {children}
+            </SocketProvider>
           </ThemeProvider>
         </body>
       </html>
-    </ClerkProvider>
+    </ClerkProvider >
   );
 }
