@@ -65,7 +65,7 @@ export function DeleteMessageModal() {
               Cancel
             </Button>
             <Button
-              variant="primary"
+              className="bg-red-500 hover:bg-red-600 text-white"
               disabled={isLoading}
               onClick={onClick}
             >

@@ -5,9 +5,9 @@ import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 import { getOrCreateConversation } from "@/lib/conversation";
 import { ChatHeader } from "@/components/chat/chat-header";
-// import { ChatMessages } from "@/components/chat/chat-messages";
-// import { ChatInput } from "@/components/chat/chat-input";
-// import { MediaRoom } from "@/components/media-room";
+import { ChatMessages } from "@/components/chat/chat-messages";
+import { ChatInput } from "@/components/chat/chat-input";
+import { MediaRoom } from "@/components/media-room";
 
 interface MemberIdPageProps {
   params: {
@@ -59,7 +59,7 @@ export default async function MemberIdPage({
         serverId={serverId}
         type="conversation"
       />
-      {/* {video && <MediaRoom chatId={conversation.id} video audio />}
+      {video && <MediaRoom chatId={conversation.id} video audio />}
       {!video && (
         <>
           <ChatMessages
@@ -84,7 +84,7 @@ export default async function MemberIdPage({
             }}
           />
         </>
-      )} */}
+      )}
     </div>
 
   );

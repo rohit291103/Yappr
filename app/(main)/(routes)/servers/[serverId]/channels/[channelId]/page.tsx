@@ -7,20 +7,20 @@ import { db } from "@/lib/db";
 import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatMessages } from "@/components/chat/chat-messages";
-// import { MediaRoom } from "@/components/media-room";
+import { MediaRoom } from "@/components/media-room";
 
 interface ChannelIdPageProps {
-  params: {
+  params: Promise<{
     serverId: string;
     channelId: string;
-  };
+  }>;
 }
 
-export default async function ChannelIdPage({
-  params: { channelId, serverId }
-}: ChannelIdPageProps) {
-  const profile = await currentProfile();
 
+export default async function ChannelIdPage({ params }: ChannelIdPageProps) {
+  const { serverId, channelId } = await params; // ✅ await here
+
+  const profile = await currentProfile();
   if (!profile) return redirect("/");
 
   const channel = await db.channel.findUnique({
@@ -43,18 +43,18 @@ export default async function ChannelIdPage({
       {channel.type === ChannelType.TEXT && (
         <>
           <ChatMessages
-            // member={member}
-            // name={channel.name}
-            // chatId={channel.id}
-            // type="channel"
-            // apiUrl="/api/messages"
-            // socketUrl="/api/socket/messages"
-            // socketQuery={{
-            //   channelId: channel.id,
-            //   serverId: channel.serverId
-            // }}
-            // paramKey="channelId"
-            // paramValue={channel.id}
+            member={member}
+            name={channel.name}
+            chatId={channel.id}
+            type="channel"
+            apiUrl="/api/messages"
+            socketUrl="/api/socket/messages"
+            socketQuery={{
+              channelId: channel.id,
+              serverId: channel.serverId
+            }}
+            paramKey="channelId"
+            paramValue={channel.id}
           />
           <ChatInput
             name={channel.name}
@@ -67,12 +67,12 @@ export default async function ChannelIdPage({
           />
         </>
       )}
-      {/* {channel.type === ChannelType.AUDIO && (
+      {channel.type === ChannelType.AUDIO && (
         <MediaRoom chatId={channel.id} video={false} audio={true} />
       )}
       {channel.type === ChannelType.VIDEO && (
         <MediaRoom chatId={channel.id} video={true} audio={true} />
-      )} */}
+      )}
     </div>
   );
 }
