@@ -10,19 +10,23 @@ import { ChatInput } from "@/components/chat/chat-input";
 import { MediaRoom } from "@/components/media-room";
 
 interface MemberIdPageProps {
-  params: {
+  params: Promise<{
     memberId: string;
     serverId: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     video?: boolean;
-  };
+  }>;
 }
 
 export default async function MemberIdPage({
-  params: { memberId, serverId },
-  searchParams: { video }
+  params,
+  searchParams
 }: MemberIdPageProps) {
+  // Await both params and searchParams, then destructure
+  const { memberId, serverId } = await params;
+  const { video } = await searchParams;
+  
   const profile = await currentProfile();
 
   if (!profile) return redirect("/");
@@ -78,7 +82,7 @@ export default async function MemberIdPage({
           <ChatInput
             name={otherMember.profile.name}
             type="conversation"
-            apiUrl="/api/socket/direct-messages"
+            apiUrl="/api/direct-messages"
             query={{
               conversationId: conversation.id
             }}

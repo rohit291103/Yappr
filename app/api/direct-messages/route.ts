@@ -1,3 +1,4 @@
+// app/api/direct-messages/route.ts
 import { NextResponse } from "next/server";
 import { DirectMessage } from "@/lib/generated/prisma";
 
@@ -64,6 +65,97 @@ export async function GET(req: Request) {
     return NextResponse.json({ items: messages, nextCursor });
   } catch (error) {
     console.error("[DIRECT_MESSAGES_GET]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+
+// Add the POST method for creating new direct messages
+export async function POST(req: Request) {
+  try {
+    const profile = await currentProfile();
+    
+    if (!profile) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const { content, fileUrl } = await req.json();
+    const { searchParams } = new URL(req.url);
+    
+    const conversationId = searchParams.get("conversationId");
+
+    if (!conversationId) {
+      return new NextResponse("Conversation ID missing", { status: 400 });
+    }
+
+    if (!content) {
+      return new NextResponse("Content missing", { status: 400 });
+    }
+
+    // Find the conversation and verify the user is part of it
+    const conversation = await db.conversation.findFirst({
+      where: {
+        id: conversationId as string,
+        OR: [
+          {
+            memberOne: {
+              profileId: profile.id
+            }
+          },
+          {
+            memberTwo: {
+              profileId: profile.id
+            }
+          }
+        ]
+      },
+      include: {
+        memberOne: {
+          include: {
+            profile: true,
+          }
+        },
+        memberTwo: {
+          include: {
+            profile: true,
+          }
+        }
+      }
+    });
+
+    if (!conversation) {
+      return new NextResponse("Conversation not found", { status: 404 });
+    }
+
+    // Determine which member is sending the message
+    const member = conversation.memberOne.profileId === profile.id 
+      ? conversation.memberOne 
+      : conversation.memberTwo;
+
+    if (!member) {
+      return new NextResponse("Member not found", { status: 404 });
+    }
+
+    // Create the direct message
+    const message = await db.directMessage.create({
+      data: {
+        content,
+        fileUrl,
+        conversationId: conversationId as string,
+        memberId: member.id,
+      },
+      include: {
+        member: {
+          include: {
+            profile: true,
+          }
+        }
+      }
+    });
+
+    return NextResponse.json(message);
+    
+  } catch (error) {
+    console.log("[DIRECT_MESSAGES_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

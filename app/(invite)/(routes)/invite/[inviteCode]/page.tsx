@@ -5,14 +5,17 @@ import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 
 interface InviteCodPageProps {
-  params: {
+  params: Promise<{
     inviteCode: string;
-  };
+  }>;
 }
 
 export default async function InviteCodPage({
-  params: { inviteCode }
+  params
 }: InviteCodPageProps) {
+  // Await params first, then destructure
+  const { inviteCode } = await params;
+  
   const profile = await currentProfile();
 
   if (!profile) return redirect("/");
